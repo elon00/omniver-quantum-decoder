@@ -1,0 +1,19 @@
+{
+  "slug": "omniver-quantum-decoder",
+  "name": "Omniver Quantum Decoder",
+  "version": "2.5.0",
+  "executa_type": "tool",
+  "description": "Anna-native quantum analysis Executa for Shor-style order finding, factorization risk analysis, and host-LLM quantum guidance.",
+  "tool_id": "tool-dev-omniver-quantum-decoder",
+  "type": "python",
+  "enabled": true,
+  "distribution": {
+    "active": "local",
+    "profiles": {
+      "local": {
+        "type": "local",
+        "supports_protocol": true
+      }
+    }
+  }
+}

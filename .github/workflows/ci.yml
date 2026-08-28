@@ -2,7 +2,7 @@ name: CI
 
 on:
   push:
-    branches: [ main, master ]
+    branches: [ main, master, anna-hackathon-production-fix ]
   pull_request:
     branches: [ main, master ]
 
@@ -14,7 +14,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
           cache: npm
       - name: Install dependencies
         run: npm ci || npm install
@@ -24,3 +24,20 @@ jobs:
         run: npm run build
       - name: Test
         run: echo 'no test script'
+
+  anna-validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Node.js 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Install uv
+        uses: astral-sh/setup-uv@v6
+      - name: Install Anna CLI
+        run: npm install -g @anna-ai/cli
+      - name: Validate Anna project
+        run: anna-app validate --strict
+      - name: Compile Executa Python
+        run: python -m py_compile executas/omniver-quantum-decoder/omniver_quantum_decoder.py

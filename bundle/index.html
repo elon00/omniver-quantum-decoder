@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Omniver Quantum Decoder</title>
+  <link rel="stylesheet" href="style.css" />
+  <script src="anna-tool-ids.js" defer></script>
+  <script src="app.js" type="module"></script>
+</head>
+<body>
+  <main class="shell">
+    <header class="hero">
+      <div>
+        <div class="eyebrow">ANNA NATIVE • QUANTUM SECURITY</div>
+        <h1>Omniver Quantum Decoder</h1>
+        <p>Shor-style order finding, quantum-risk analysis, and an Anna-hosted quantum copilot — packaged as one native Anna App.</p>
+      </div>
+      <div class="status" id="runtime-status">Connecting to Anna…</div>
+    </header>
+
+    <section class="grid">
+      <article class="card decoder">
+        <div class="card-head"><h2>Shor-style Decoder</h2><span class="badge">LOCAL + EXECUTA</span></div>
+        <p class="muted">For small integers, the bundled Executa performs modular order finding and derives non-trivial factors. This is a simulator, not real quantum hardware.</p>
+        <div class="controls">
+          <label>Composite N<input id="number" type="number" min="4" max="9999" value="15" /></label>
+          <label>Base a <input id="base" type="number" min="2" placeholder="auto" /></label>
+          <button id="factor">Decode N</button>
+        </div>
+        <pre id="factor-output">Ready.</pre>
+      </article>
+
+      <article class="card copilot">
+        <div class="card-head"><h2>Quantum Copilot</h2><span class="badge purple">ANNA LLM</span></div>
+        <p class="muted">Questions are sent through the bundled Executa → Anna reverse sampling. No Gemini/OpenAI key is required by this App.</p>
+        <textarea id="prompt" rows="6" placeholder="Ask about Shor's algorithm, ECDSA risk, PQC migration, or the factorization result…"></textarea>
+        <button id="ask">Ask Anna Copilot</button>
+        <pre id="copilot-output">Ask a question to begin.</pre>
+      </article>
+    </section>
+
+    <section class="card audit">
+      <div class="card-head"><h2>Anna Runtime Audit</h2><span class="badge green" id="tool-status">Checking…</span></div>
+      <div class="audit-grid">
+        <div><span>App Runtime</span><strong id="runtime-detail">—</strong></div>
+        <div><span>Bundled Executa</span><strong id="executa-detail">omniver-quantum-decoder</strong></div>
+        <div><span>Transport</span><strong>JSON-RPC 2.0 / stdio</strong></div>
+        <div><span>AI Provider</span><strong>Anna Host LLM</strong></div>
+      </div>
+    </section>
+
+    <footer>Omniver Quantum Decoder • Anna Hackathon build • Simulation results must not be interpreted as a real-world key compromise.</footer>
+  </main>
+</body>
+</html>

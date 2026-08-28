@@ -1,0 +1,17 @@
+[project]
+name = "omniver-quantum-decoder"
+version = "2.5.0"
+description = "Anna-native quantum analysis Executa for Omniver Quantum Decoder"
+requires-python = ">=3.10"
+dependencies = ["executa-sdk>=0.1.0"]
+
+[project.scripts]
+tool-dev-omniver-quantum-decoder = "omniver_quantum_decoder:main"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["."]
+only-include = ["omniver_quantum_decoder.py"]

@@ -1,8 +1,17 @@
 {
   "schema": 2,
-  "permissions": ["storage.read", "storage.write"],
-  "required_executas": [],
-  "tags": ["quantum", "solana", "shor-algorithm", "cryptography", "bitcoin-decoding"],
+  "permissions": ["tools.invoke"],
+  "required_executas": [
+    {
+      "tool_id": "bundled:omniver-quantum-decoder",
+      "min_version": "2.5.0",
+      "version": "latest"
+    }
+  ],
+  "optional_executas": [],
+  "host_capabilities": ["llm.sample"],
+  "system_prompt_addendum": "The user has the Omniver Quantum Decoder app open. It provides small-integer Shor-style order-finding simulation and an Anna-host quantum copilot through its bundled Executa. Treat all simulator results as educational simulations; never claim that a real cryptographic key has been recovered unless independently verified on real authorized data.",
+  "tags": ["quantum", "shor-algorithm", "post-quantum", "cryptography", "bitcoin", "solana", "executa", "sampling"],
   "ui": {
     "bundle": {
       "format": "static-spa",
@@ -14,16 +23,21 @@
         "name": "main",
         "title": "Omniver Quantum Decoder",
         "default": true,
-        "default_size": { "w": 1200, "h": 800 },
-        "min_size": { "w": 380, "h": 480 }
+        "entry": "index.html",
+        "default_size": { "w": 1100, "h": 760 },
+        "min_size": { "w": 380, "h": 520 },
+        "resizable": true,
+        "movable": true,
+        "single_instance": true
       }
     ],
     "host_api": {
-      "tools": [],
-      "storage": ["get", "set"],
+      "tools": ["required:bundled:omniver-quantum-decoder"],
       "window": ["set_title", "ready"]
     },
-    "csp_overrides": {},
+    "csp_overrides": {
+      "script-src": ["'self'"]
+    },
     "state_merge": "last_writer_wins"
   },
   "dev": {

@@ -1,6 +1,14 @@
 {
   "name": "Omniver Quantum Decoder",
   "slug": "omniver-quantum-decoder",
-  "version": "2.4.0",
-  "description": "Interactive Shor Algorithm simulator and Bitcoin quantum decoding"
+  "version": "2.5.0",
+  "tagline": "Anna-native quantum decoding and post-quantum risk analysis.",
+  "description": "A native Anna App for Shor-style order-finding simulation, small-integer factorization, quantum-security education, and an Anna-hosted quantum copilot. Simulation results never claim a real-world key compromise.",
+  "category": "developer-tools",
+  "pricing_model": "free",
+  "bundled_executas": {
+    "omniver-quantum-decoder": {
+      "path": "./executas/omniver-quantum-decoder"
+    }
+  }
 }

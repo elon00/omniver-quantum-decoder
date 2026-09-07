@@ -1,24 +1,46 @@
 import { SolanaPlayerProfile, SolanaTransactionRecord } from "../types";
+import { sha256 } from "@noble/hashes/sha256.js";
+import { bytesToHex, hexToBytes } from "../lib/pqcCrypto";
 
 const LOCAL_STORAGE_KEY_PLAYER = "omniver_solana_player_profile_v1";
 const LOCAL_STORAGE_KEY_TXS = "omniver_solana_transactions_v1";
 
-function generateRandomSolanaPubkey(): string {
-  const chars = "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz";
-  let result = "Omni";
-  for (let i = 0; i < 40; i++) {
-    result += chars.charAt(Math.floor(Math.random() * chars.length));
+// Base58 alphabet for Solana addresses
+const ALPHABET = "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz";
+
+function encodeBase58(bytes: Uint8Array): string {
+  const digits = [0];
+  for (let i = 0; i < bytes.length; i++) {
+    for (let j = 0; j < digits.length; j++) digits[j] <<= 8;
+    digits[0] += bytes[i];
+    let carry = 0;
+    for (let j = 0; j < digits.length; ++j) {
+      digits[j] += carry;
+      carry = (digits[j] / 58) | 0;
+      digits[j] %= 58;
+    }
+    while (carry) {
+      digits.push(carry % 58);
+      carry = (carry / 58) | 0;
+    }
   }
-  return result;
+  for (let i = 0; i < bytes.length && bytes[i] === 0; i++) digits.push(0);
+  return digits.reverse().map((digit) => ALPHABET[digit]).join("");
 }
 
-function generateRandomSignature(): string {
-  const chars = "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz";
-  let result = "5";
-  for (let i = 0; i < 86; i++) {
-    result += chars.charAt(Math.floor(Math.random() * chars.length));
-  }
-  return result;
+export function generateCryptoSolanaPubkey(seedStr: string = "omniver-genesis-key"): string {
+  const seedBytes = new TextEncoder().encode(seedStr + Date.now().toString());
+  const hash = sha256(seedBytes);
+  return encodeBase58(hash).substring(0, 44);
+}
+
+export function generateCryptoSignature(payload: string): string {
+  const hash1 = sha256(new TextEncoder().encode(payload));
+  const hash2 = sha256(new Uint8Array([...hash1, ...new TextEncoder().encode("solana-signature-sig")]));
+  const fullBytes = new Uint8Array(64);
+  fullBytes.set(hash1, 0);
+  fullBytes.set(hash2, 32);
+  return encodeBase58(fullBytes);
 }
 
 export function getInitialPlayerProfile(): SolanaPlayerProfile {
@@ -32,7 +54,7 @@ export function getInitialPlayerProfile(): SolanaPlayerProfile {
   }
 
   const initial: SolanaPlayerProfile = {
-    publicKey: generateRandomSolanaPubkey(),
+    publicKey: generateCryptoSolanaPubkey("omniver-pqc-init"),
     balanceSol: 4.82,
     qBitsTokens: 150,
     level: 1,
@@ -71,9 +93,10 @@ export function getInitialTransactions(playerPubkey: string): SolanaTransactionR
     // fallback
   }
 
+  const sig = generateCryptoSignature(`genesis_init_001:${playerPubkey}`);
   const initial: SolanaTransactionRecord[] = [
     {
-      signature: generateRandomSignature(),
+      signature: sig,
       slot: 284109201,
       blockTime: new Date(Date.now() - 1000 * 60 * 25).toISOString(),
       instruction: "initialize_player",
@@ -81,7 +104,7 @@ export function getInitialTransactions(playerPubkey: string): SolanaTransactionR
       points: 50,
       taskId: "genesis_init_001",
       status: "finalized",
-      explorerUrl: `https://explorer.solana.com/tx/genesis_init_001?cluster=devnet`,
+      explorerUrl: `https://explorer.solana.com/tx/${sig}?cluster=devnet`,
     },
   ];
 
@@ -103,8 +126,9 @@ export function recordOnChainDecodeProof(
   taskId: string,
   badgeTitle?: string
 ): { updatedProfile: SolanaPlayerProfile; newTx: SolanaTransactionRecord } {
-  const signature = generateRandomSignature();
-  const slot = 284110000 + Math.floor(Math.random() * 50000);
+  const payload = `${player.publicKey}:${pointsEarned}:${taskId}:${Date.now()}`;
+  const signature = generateCryptoSignature(payload);
+  const slot = 284110000 + (parseInt(bytesToHex(sha256(new TextEncoder().encode(payload))).slice(0, 4), 16) % 50000);
 
   const updatedExp = player.experience + pointsEarned;
   const newLevel = Math.floor(updatedExp / 100) + 1;
@@ -113,8 +137,9 @@ export function recordOnChainDecodeProof(
 
   const updatedBadges = [...player.badges];
   if (badgeTitle && !updatedBadges.some((b) => b.title === badgeTitle)) {
+    const badgeId = "badge_" + bytesToHex(sha256(new TextEncoder().encode(badgeTitle))).substring(0, 8);
     updatedBadges.push({
-      id: "badge_" + Math.random().toString(36).substring(2, 8),
+      id: badgeId,
       title: badgeTitle,
       description: `Awarded for solving task #${taskId} with quantum precision.`,
       unlockedAt: new Date().toISOString(),

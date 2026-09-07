@@ -9,7 +9,11 @@
     "start": "node dist/server.cjs",
     "preview": "vite preview",
     "clean": "rm -rf dist server.js",
-    "lint": "tsc --noEmit"
+    "lint": "tsc --noEmit",
+    "test:nist": "node C:/Users/marti/quantumshield/node_modules/tsx/dist/cli.mjs tests/nist-pqc.test.mjs",
+    "audit:crypto": "node scripts/audit-crypto.mjs",
+    "reality:universal": "node C:/Users/marti/quantumshield/node_modules/tsx/dist/cli.mjs scripts/reality-universal.ts",
+    "reality:certify": "node C:/Users/marti/quantumshield/node_modules/tsx/dist/cli.mjs scripts/generate-urs-certificate.ts"
   },
   "dependencies": {
     "@google/genai": "^2.4.0",

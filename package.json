@@ -14,6 +14,7 @@
     "test:nist": "npx tsx tests/nist-pqc.test.ts",
     "audit:crypto": "node scripts/audit-crypto.mjs",
     "reality:universal": "npx tsx scripts/reality-universal.ts",
+    "reality:external": "npx tsx scripts/reality-external-gate.ts",
     "reality:certify": "npx tsx scripts/generate-urs-certificate.ts"
   },
   "dependencies": {
@@ -25,7 +26,7 @@
     "@solana/web3.js": "^1.98.4",
     "@tailwindcss/vite": "^4.1.14",
     "@types/canvas-confetti": "^1.9.0",
-    "@types/d3": "^7.4.3",
+    "@types/d3": "^7.4.0",
     "@vitejs/plugin-react": "^5.0.4",
     "bs58": "^6.0.0",
     "canvas-confetti": "^1.9.4",
@@ -45,7 +46,6 @@
     "esbuild": "^0.25.0",
     "tailwindcss": "^4.1.14",
     "tsx": "^4.21.0",
-    "typescript": "~5.8.2",
-    "vite": "^6.2.3"
+    "typescript": "~5.8.2"
   }
 }

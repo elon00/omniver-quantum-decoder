@@ -22,8 +22,12 @@ jobs:
         run: npm run lint
       - name: Build
         run: npm run build
-      - name: Test
-        run: echo 'no test script'
+      - name: Run NIST PQC Tests
+        run: npm run test:nist
+      - name: Run Cryptographic Security Audit
+        run: npm run audit:crypto
+      - name: Run Universal Reality Verification
+        run: npm run reality:universal
 
   anna-validate:
     runs-on: ubuntu-latest

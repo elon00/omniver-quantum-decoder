@@ -5,13 +5,14 @@ import { CircuitCanvas } from "./components/CircuitCanvas";
 import { BitcoinQuantumArena } from "./components/BitcoinQuantumArena";
 import { SolanaRelayerView } from "./components/SolanaRelayerView";
 import { AnnaExecutaConsole } from "./components/AnnaExecutaConsole";
+import { HardcorePqcConsole } from "./components/HardcorePqcConsole";
 import { CodeExportModal } from "./components/CodeExportModal";
 import { QuantumBackend, SolanaPlayerProfile } from "./types";
 import { getInitialPlayerProfile, recordOnChainDecodeProof } from "./utils/solanaSimulator";
 import { Cpu, ShieldCheck, Sparkles, Terminal, Activity } from "lucide-react";
 
 export default function App() {
-  const [activeTab, setActiveTab] = useState<"shor_lab" | "circuit_studio" | "bitcoin_arena" | "solana_relayer" | "anna_executa">("shor_lab");
+  const [activeTab, setActiveTab] = useState<"shor_lab" | "circuit_studio" | "bitcoin_arena" | "solana_relayer" | "anna_executa" | "pqc_shield">("shor_lab");
   const [selectedBackend, setSelectedBackend] = useState<QuantumBackend>("qiskit");
   const [player, setPlayer] = useState<SolanaPlayerProfile>(getInitialPlayerProfile);
   const [isExportOpen, setIsExportOpen] = useState<boolean>(false);
@@ -70,6 +71,10 @@ export default function App() {
           <AnnaExecutaConsole
             playerAddress={player.publicKey}
           />
+        )}
+
+        {activeTab === "pqc_shield" && (
+          <HardcorePqcConsole />
         )}
       </main>
 

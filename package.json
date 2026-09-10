@@ -1,7 +1,7 @@
 {
-  "name": "react-example",
+  "name": "omniver-quantum-decoder",
   "private": true,
-  "version": "0.0.0",
+  "version": "1.0.0",
   "type": "module",
   "scripts": {
     "dev": "tsx server.ts",
@@ -10,13 +10,18 @@
     "preview": "vite preview",
     "clean": "rm -rf dist server.js",
     "lint": "tsc --noEmit",
-    "test:nist": "node C:/Users/marti/quantumshield/node_modules/tsx/dist/cli.mjs tests/nist-pqc.test.mjs",
+    "test": "npx tsx tests/nist-pqc.test.ts",
+    "test:nist": "npx tsx tests/nist-pqc.test.ts",
     "audit:crypto": "node scripts/audit-crypto.mjs",
-    "reality:universal": "node C:/Users/marti/quantumshield/node_modules/tsx/dist/cli.mjs scripts/reality-universal.ts",
-    "reality:certify": "node C:/Users/marti/quantumshield/node_modules/tsx/dist/cli.mjs scripts/generate-urs-certificate.ts"
+    "reality:universal": "npx tsx scripts/reality-universal.ts",
+    "reality:certify": "npx tsx scripts/generate-urs-certificate.ts"
   },
   "dependencies": {
     "@google/genai": "^2.4.0",
+    "@noble/ciphers": "^1.2.1",
+    "@noble/curves": "^1.8.0",
+    "@noble/hashes": "^1.7.1",
+    "@noble/post-quantum": "^0.7.1",
     "@solana/web3.js": "^1.98.4",
     "@tailwindcss/vite": "^4.1.14",
     "@types/canvas-confetti": "^1.9.0",

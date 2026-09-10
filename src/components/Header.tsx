@@ -1,11 +1,11 @@
 import React from "react";
-import { Cpu, Wallet, Award, Coins, Code2, Globe2, Sparkles, Terminal } from "lucide-react";
+import { Cpu, Wallet, Award, Coins, Code2, Globe2, Sparkles, Terminal, ShieldCheck } from "lucide-react";
 import { QuantumBackend, SolanaPlayerProfile } from "../types";
 
 interface HeaderProps {
   player: SolanaPlayerProfile;
-  activeTab: "shor_lab" | "circuit_studio" | "bitcoin_arena" | "solana_relayer" | "anna_executa";
-  setActiveTab: (tab: "shor_lab" | "circuit_studio" | "bitcoin_arena" | "solana_relayer" | "anna_executa") => void;
+  activeTab: "shor_lab" | "circuit_studio" | "bitcoin_arena" | "solana_relayer" | "anna_executa" | "pqc_shield";
+  setActiveTab: (tab: "shor_lab" | "circuit_studio" | "bitcoin_arena" | "solana_relayer" | "anna_executa" | "pqc_shield") => void;
   selectedBackend: QuantumBackend;
   setSelectedBackend: (b: QuantumBackend) => void;
   onOpenCodeExport: () => void;
@@ -159,6 +159,19 @@ export const Header: React.FC<HeaderProps> = ({
           >
             <Terminal className="w-3.5 h-3.5" />
             <span>Anna Executa</span>
+          </button>
+
+          <button
+            id="tab-pqc-shield"
+            onClick={() => setActiveTab("pqc_shield")}
+            className={`px-3 py-1.5 rounded-lg transition-all flex items-center gap-1.5 ${
+              activeTab === "pqc_shield"
+                ? "bg-gradient-to-r from-teal-500 to-emerald-600 text-white shadow-md shadow-emerald-600/30 font-semibold"
+                : "text-slate-400 hover:text-slate-200"
+            }`}
+          >
+            <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
+            <span>Hardcore PQC</span>
           </button>
         </nav>
 

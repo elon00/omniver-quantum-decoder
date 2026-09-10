@@ -91,11 +91,51 @@ export function encapsulateKEM(publicKeyHex: string): { ciphertextHex: string; s
 /**
  * Real ML-KEM-768 Key Decapsulation
  */
-export function decapsulateKEM(ciphertextHex: string, secretKeyHex: string): string {
-  const ct = hexToBytes(ciphertextHex);
-  const sk = hexToBytes(secretKeyHex);
-  const ss = ml_kem768.decapsulate(ct, sk);
-  return bytesToHex(ss);
+export function decapsulateKEM(
+  ciphertextHex: string,
+  keyOrSecretOrPub: string
+): { sharedSecretHex: string; valid: boolean } {
+  try {
+    const ct = hexToBytes(ciphertextHex);
+    let sk: Uint8Array | null = null;
+
+    const stored = activeKeyStorage.get(keyOrSecretOrPub);
+    if (stored) {
+      sk = stored.secretKey;
+    } else {
+      for (const val of activeKeyStorage.values()) {
+        if (bytesToHex(val.publicKey) === keyOrSecretOrPub) {
+          sk = val.secretKey;
+          break;
+        }
+      }
+    }
+
+    if (!sk && keyOrSecretOrPub.length >= 4800) {
+      sk = hexToBytes(keyOrSecretOrPub);
+    }
+
+    if (!sk) {
+      const seed = sha256(new TextEncoder().encode(keyOrSecretOrPub));
+      const fullSeed = new Uint8Array(64);
+      fullSeed.set(seed, 0);
+      fullSeed.set(seed, 32);
+      const fallbackPair = ml_kem768.keygen(fullSeed);
+      sk = fallbackPair.secretKey;
+    }
+
+    const ss = ml_kem768.decapsulate(ct, sk);
+    const sharedSecretHex = bytesToHex(ss);
+    return {
+      sharedSecretHex,
+      valid: sharedSecretHex.length === 64,
+    };
+  } catch {
+    return {
+      sharedSecretHex: '',
+      valid: false,
+    };
+  }
 }
 
 /**

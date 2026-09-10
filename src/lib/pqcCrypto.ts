@@ -63,11 +63,13 @@ export function generatePqcKeyPair(
   activeKeyStorage.set(pubHex, { secretKey: secBytes, publicKey: pubBytes });
 
   return {
+    keyId: `pqc-${algorithm.toLowerCase()}-${pubHex.substring(0, 8)}`,
     algorithm,
     publicKey: pubHex,
     secretKey: secHex,
     keySizeBits,
     securityLevel,
+    nistSecurityLevel: securityLevel,
     generatedAt: new Date().toISOString(),
   };
 }

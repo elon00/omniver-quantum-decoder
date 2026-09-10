@@ -5,97 +5,97 @@
 [![CI](https://github.com/elon00/omniver-quantum-decoder/actions/workflows/ci.yml/badge.svg)](https://github.com/elon00/omniver-quantum-decoder/actions/workflows/ci.yml)
 [![Pages Deployment](https://github.com/elon00/omniver-quantum-decoder/actions/workflows/pages.yml/badge.svg)](https://elon00.github.io/omniver-quantum-decoder/)
 [![NIST FIPS 203/204 Conformance](https://img.shields.io/badge/NIST%20PQC-ML--KEM--768%20%7C%20ML--DSA--65-blue)](docs/HARDCORE_PQC_SPEC.md)
-[![Reality Score](https://img.shields.io/badge/Universal%20Reality%20Gates-10%2F10%20PASS-brightgreen)](REALITY_MANIFEST.json)
+[![URS Internal Verification](https://img.shields.io/badge/URS-internal%20verification%20defined-blue)](REALITY_MANIFEST.json)
 
-🌐 **Live Web Application**: [https://elon00.github.io/omniver-quantum-decoder/](https://elon00.github.io/omniver-quantum-decoder/)  
-📦 **Repository**: [https://github.com/elon00/omniver-quantum-decoder](https://github.com/elon00/omniver-quantum-decoder)
+🌐 **Live Web Application**: https://elon00.github.io/omniver-quantum-decoder/  
+📦 **Repository**: https://github.com/elon00/omniver-quantum-decoder
 
 ---
 
-## ⚡ Hardcore NIST Post-Quantum Cryptography (PQC)
+## Reality Status — September 2026
 
-This platform integrates production-grade, zero-mock Post-Quantum Cryptographic primitives conforming to NIST standards:
+| Area | Status | Evidence boundary |
+|---|---|---|
+| Source code | 🟢 **REAL** | Executable TypeScript/Python/React code is present in the repository. |
+| PQC ML-KEM-768 | 🟢 **TESTED** | Repository tests exercise key sizes, encapsulation/decapsulation and corrupted-ciphertext behavior. |
+| PQC ML-DSA-65 | 🟢 **TESTED** | Repository tests exercise key sizes, signatures, verification and negative cases. |
+| Shor-style mathematics | 🟢 **TESTED** | Small-integer number-theory/order-finding invariants are asserted in the URS suite. |
+| Quantum hardware execution | 🟡 **INTEGRATION PATH** | Qiskit/IBM Runtime integration is represented in code; successful production hardware execution must be separately evidenced. |
+| Anna integration | 🟡 **VALIDATION PATH** | CI validates the Anna project and Python Executa compilation; public Marketplace/cloud readiness still requires the production distribution artifact. |
+| Independent security audit | 🔴 **NOT COMPLETED** | Repository testing is not an independent audit. See `docs/SECURITY_AUDIT.md`. |
+| Production certification | 🔴 **NOT CERTIFIED** | Production requires external evidence and human review. See `docs/PRODUCTION_READINESS.md`. |
+| Market readiness | 🔴 **NOT PROVEN** | Requires real-user, sustained-usage and operational evidence. |
 
-- **NIST FIPS 203 (ML-KEM-768)**: Kyber-based post-quantum key encapsulation mechanism. Includes wire invariants (1,184B public key, 2,400B private key, 1,088B ciphertext) and **§7.3 Implicit Rejection** for invalid/corrupted ciphertexts.
-- **NIST FIPS 204 (ML-DSA-65)**: Dilithium-based digital signature algorithm (1,952B public key, 4,032B secret key, 3,309B digital signatures) with **Wycheproof bit-flip negative testing**.
-- **x402 Dual-Hybrid Conjunction**: Post-quantum service settlement protocol requiring valid classical ECDSA/Ed25519 authorization combined conjunctively with ML-DSA-65 signatures.
-- **Universal Reality System (URS v1.0)**: 10 automated verification gates ensuring 0 simulation mocks in cryptographic paths, strict fail-closed safety, and reproducible KAT vectors.
+### Current Reality Verdict
 
-### Test & Audit Commands
+**Omniver Quantum Decoder is a substantial, testable quantum/PQC software project. Its cryptographic and mathematical test paths are real and executable in principle, but it is not honestly certifiable as 100% production-ready or market-ready until independent security, deployment, operational and product evidence exists.**
+
+## ⚡ PQC Test Surface
+
+The repository includes NIST-aligned tests for:
+
+- ML-KEM-768: public key 1,184 bytes, secret key 2,400 bytes, ciphertext 1,088 bytes, shared secret 32 bytes, decapsulation and implicit-rejection behavior.
+- ML-DSA-65: public key 1,952 bytes, secret key 4,032 bytes, signature 3,309 bytes, verification and tamper/format rejection.
+- RFC 5869 HKDF-SHA256 known-answer testing.
+- Hybrid authorization checks using classical authorization + ML-DSA-65.
+
+These claims describe what the repository tests; they are not a substitute for third-party certification.
+
+### Verification commands
 
 ```bash
-# Run 8-tier NIST FIPS 203 & 204 test suite
+npm ci
+npm run lint
+npm run build
 npm run test:nist
-
-# Run 23 standalone cryptographic assertions (RFC 5869, Wycheproof)
 npm run audit:crypto
-
-# Run Universal Reality 10-Gate Verification
 npm run reality:universal
 ```
 
----
+The CI workflow runs lint, build, NIST PQC tests, cryptographic audit, URS verification and Anna validation/Executa compilation.
 
-## Anna architecture
+## 🧠 Shor-style Quantum Decoder
+
+The URS suite verifies classical number-theory invariants used by the small-integer Shor-style implementation, including GCD, modular exponentiation, order finding and continued fractions. This is a simulator/research capability, not evidence of a real-world cryptographic break.
+
+## 🤖 Anna Architecture
 
 ```text
-Anna App UI (bundle/)
-        ↓
+Anna App UI
+   ↓
 Anna Runtime
-        ↓
-Bundled Executa: omniver-quantum-decoder
-        ↓
-Shor-style order finding OR reverse sampling
-        ↓
+   ↓
+Bundled Executa
+   ↓
+Shor-style order finding / reverse sampling
+   ↓
 Anna Host LLM
 ```
 
-The App uses a bundled Python Executa and the current Anna v2 JSON-RPC/reverse-sampling model. No Gemini/OpenAI API key is required for the Anna copilot.
+The repository separates the Anna submission surface under `bundle/` and the bundled Python Executa under `executas/omniver-quantum-decoder/`.
 
-## Features
+## 🔐 Production Safety
 
-- Small-integer Shor-style order-finding simulator.
-- Non-trivial factor derivation for supported composite integers.
-- Anna-host quantum copilot through `sampling/createMessage`.
-- Native Anna Runtime UI using `anna.tools.invoke`.
-- Bundled Executa handle so the production `tool_id` is resolved by Anna instead of hardcoded in the manifest.
-- Security-conscious messaging that distinguishes simulation from real quantum attacks.
+Production and market status are intentionally **fail-closed**.
 
-## Local development
+Do not represent this repository as independently audited, production-certified, marketplace/cloud-ready, or market-proven until the corresponding evidence is independently produced and reviewed.
 
-Requirements: Node.js 22+, `uv`, and the Anna CLI (`@anna-ai/cli`).
+See:
 
-```bash
-anna-app doctor
-anna-app validate --strict
-anna-app dev
-```
+- [`docs/EXTERNAL_VERIFICATION.md`](docs/EXTERNAL_VERIFICATION.md)
+- [`docs/SECURITY_AUDIT.md`](docs/SECURITY_AUDIT.md)
+- [`docs/PRODUCTION_READINESS.md`](docs/PRODUCTION_READINESS.md)
+- [`docs/HARDCORE_PQC_SPEC.md`](docs/HARDCORE_PQC_SPEC.md)
+- [`REALITY_MANIFEST.json`](REALITY_MANIFEST.json)
 
-Inside Anna, test:
+## 📜 URS Interpretation
 
-1. `N = 15` → Decode N → verify non-trivial factors.
-2. Ask the Quantum Copilot a question.
-3. Confirm the Executa is running and that reverse sampling is enabled for the user.
-
-## Publishing
-
-The hackathon requires the final App to be published on Anna. The recommended flow is:
-
-```bash
-anna-app apps publish
-anna-app apps submit-review omniver-quantum-decoder
-```
-
-After publishing, submit the **published Anna App URL** to DoraHacks. Do not use the GitHub URL or a standalone Netlify URL as the final App URL.
-
-### Important production note
-
-The current repository config uses the `local` Executa distribution profile for deterministic development. Before a public Marketplace release, switch the Executa to a supported production distribution (for example a multi-platform binary release or an approved package distribution) and verify the Linux/Cloud Agent path. Do not claim Marketplace/cloud readiness until that artifact is actually built and installed successfully.
-
-## Existing web application
-
-The original React/Vite application remains in `src/` for the standalone version. The Anna submission surface is deliberately isolated under `bundle/`, with the Anna-specific backend under `executas/omniver-quantum-decoder/`.
+The repository's URS framework uses a weakest-link model across execution, inputs, outputs, verification, reproducibility, claim honesty, provenance, fail-closed safety, adversarial security and human audit. The internal automated engine can prove specific software assertions, but it cannot manufacture independent human audit evidence. Final status must follow the evidence.
 
 ## Disclaimer
 
 The simulator demonstrates quantum-algorithm concepts on small integers. It does **not** demonstrate recovery of a real Bitcoin, Solana, or other production private key. Real cryptographic compromise requires authorized data, appropriate quantum resources, and independent verification.
+
+## License
+
+See repository license files.

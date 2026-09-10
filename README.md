@@ -1,8 +1,40 @@
 # Omniver Quantum Decoder
 
-**Anna-native quantum security App for Shor-style order finding, factorization risk analysis, and an Anna-hosted quantum copilot.**
+**Anna-native quantum security App & Web Application for NIST FIPS 203/204 Post-Quantum Cryptography, Shor-style order finding, and quantum risk analysis.**
 
-> **Hackathon requirement:** the final submission is the published **Anna App**, not this GitHub repository or the standalone web app. This repository is the source/build project for the Anna App.
+[![CI](https://github.com/elon00/omniver-quantum-decoder/actions/workflows/ci.yml/badge.svg)](https://github.com/elon00/omniver-quantum-decoder/actions/workflows/ci.yml)
+[![Pages Deployment](https://github.com/elon00/omniver-quantum-decoder/actions/workflows/pages.yml/badge.svg)](https://elon00.github.io/omniver-quantum-decoder/)
+[![NIST FIPS 203/204 Conformance](https://img.shields.io/badge/NIST%20PQC-ML--KEM--768%20%7C%20ML--DSA--65-blue)](docs/HARDCORE_PQC_SPEC.md)
+[![Reality Score](https://img.shields.io/badge/Universal%20Reality%20Gates-10%2F10%20PASS-brightgreen)](REALITY_MANIFEST.json)
+
+🌐 **Live Web Application**: [https://elon00.github.io/omniver-quantum-decoder/](https://elon00.github.io/omniver-quantum-decoder/)  
+📦 **Repository**: [https://github.com/elon00/omniver-quantum-decoder](https://github.com/elon00/omniver-quantum-decoder)
+
+---
+
+## ⚡ Hardcore NIST Post-Quantum Cryptography (PQC)
+
+This platform integrates production-grade, zero-mock Post-Quantum Cryptographic primitives conforming to NIST standards:
+
+- **NIST FIPS 203 (ML-KEM-768)**: Kyber-based post-quantum key encapsulation mechanism. Includes wire invariants (1,184B public key, 2,400B private key, 1,088B ciphertext) and **§7.3 Implicit Rejection** for invalid/corrupted ciphertexts.
+- **NIST FIPS 204 (ML-DSA-65)**: Dilithium-based digital signature algorithm (1,952B public key, 4,032B secret key, 3,309B digital signatures) with **Wycheproof bit-flip negative testing**.
+- **x402 Dual-Hybrid Conjunction**: Post-quantum service settlement protocol requiring valid classical ECDSA/Ed25519 authorization combined conjunctively with ML-DSA-65 signatures.
+- **Universal Reality System (URS v1.0)**: 10 automated verification gates ensuring 0 simulation mocks in cryptographic paths, strict fail-closed safety, and reproducible KAT vectors.
+
+### Test & Audit Commands
+
+```bash
+# Run 8-tier NIST FIPS 203 & 204 test suite
+npm run test:nist
+
+# Run 23 standalone cryptographic assertions (RFC 5869, Wycheproof)
+npm run audit:crypto
+
+# Run Universal Reality 10-Gate Verification
+npm run reality:universal
+```
+
+---
 
 ## Anna architecture
 

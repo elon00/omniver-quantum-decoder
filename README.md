@@ -1,5 +1,10 @@
 # Omniver Quantum Decoder
 
+## Independent verification boundary
+
+Repository tests, CI, internal scorecards, and cryptographic attestations are engineering evidence only. They are **not** an independent security audit, FIPS validation of the application, or production certification. Production claims require deployment-specific evidence, independent review, operational controls, and applicable compliance work.
+
+
 **Anna-native quantum security App & Web Application for NIST FIPS 203/204 Post-Quantum Cryptography, Shor-style order finding, and quantum risk analysis.**
 
 [![CI](https://github.com/elon00/omniver-quantum-decoder/actions/workflows/ci.yml/badge.svg)](https://github.com/elon00/omniver-quantum-decoder/actions/workflows/ci.yml)

@@ -1,0 +1,48 @@
+{
+  "x402Version": "1.0.0",
+  "version": "1.0.0",
+  "name": "Omniver Quantum Decoder — Shor's Algorithm Simulator & Anna Executa AI",
+  "type": "quantum-simulator-platform",
+  "category": "ai-agent-commerce",
+  "tags": [
+    "solana",
+    "shors-algorithm",
+    "quantum-decoder",
+    "bitcoin-cryptography",
+    "anna-executa-ai",
+    "x402"
+  ],
+  "provider": {
+    "name": "Omniver Quantum / Martin",
+    "website": "https://github.com/elon00/omniver-quantum-decoder",
+    "payTo": "8qhW8ctXX77UNLTY9kx3XoAoH8kstQXPbCghUwqu34es",
+    "network": "solana-testnet",
+    "caip2": "solana:4uhcVJyU9pJkvQyS88uRDiswHXSCkY3z"
+  },
+  "endpoints": [
+    {
+      "path": "/api/v1/x402/shor/simulate",
+      "method": "POST",
+      "description": "Execute Shor's quantum period-finding circuit simulation on classical lattice emulator",
+      "pricing": {
+        "amountSol": 0.001,
+        "lamports": 1000000,
+        "currency": "SOL",
+        "alternativeUsdc": "0.01"
+      },
+      "challengeHeader": "WWW-Authenticate: x402 realm=\"omniver\", payTo=\"8qhW8ctXX77UNLTY9kx3XoAoH8kstQXPbCghUwqu34es\", amount=\"0.001\", currency=\"SOL\", network=\"solana:4uhcVJyU9pJkvQyS88uRDiswHXSCkY3z\""
+    },
+    {
+      "path": "/api/v1/x402/anna/copilot",
+      "method": "POST",
+      "description": "Query Anna Executa AI Quantum Research Copilot for post-quantum cryptanalysis and code verification",
+      "pricing": {
+        "amountSol": 0.001,
+        "lamports": 1000000,
+        "currency": "SOL",
+        "alternativeUsdc": "0.01"
+      },
+      "challengeHeader": "WWW-Authenticate: x402 realm=\"omniver\", payTo=\"8qhW8ctXX77UNLTY9kx3XoAoH8kstQXPbCghUwqu34es\", amount=\"0.001\", currency=\"SOL\", network=\"solana:4uhcVJyU9pJkvQyS88uRDiswHXSCkY3z\""
+    }
+  ]
+}

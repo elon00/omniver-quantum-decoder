@@ -19,6 +19,8 @@ jobs:
           cache: npm
       - name: Install dependencies
         run: npm ci || npm install
+      - name: Reality guard
+        run: npm run reality:guard
       - name: Lint
         run: npm run lint
       - name: Build

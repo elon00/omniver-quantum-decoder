@@ -120,7 +120,7 @@ export const AgencyAgentsHub: React.FC<AgencyAgentsHubProps> = ({ onRunAgentTask
         const outputText = data.summary || data.aiAnalysis || 'Agent completed task analysis successfully.';
         const snippet = data.recommendations && data.recommendations[0]?.codeSnippet
           ? data.recommendations[0].codeSnippet
-          : `// ${agentToRun.name} Output Verification\nexport const agentResult = {\n  status: "COMPLETED",\n  agent: "${agentToRun.name}",\n  division: "${agentToRun.division}",\n  securityBits: 256,\n  pqcCompliant: true\n};`;
+          : `// ${agentToRun.name} Output Verification\nexport const agentResult = {\n  status: "ANALYSIS_RETURNED",\n  agent: "${agentToRun.name}",\n  division: "${agentToRun.division}",\n  securityBits: 256,\n  pqcCompliant: true\n};`;
 
         setExecutionLogs(prev => [
           {
@@ -135,14 +135,14 @@ export const AgencyAgentsHub: React.FC<AgencyAgentsHubProps> = ({ onRunAgentTask
           ...prev
         ]);
       } else {
-        // Fallback simulation output
+        // Fail closed when the remote agent service does not return evidence
         setExecutionLogs(prev => [
           {
             id: `log_${Date.now()}_2`,
             agentName: agentToRun.name,
             agentIcon: agentToRun.icon,
             timestamp: new Date().toLocaleTimeString(),
-            content: `[${agentToRun.name} ANALYSIS]: Evaluated target task against ${agentToRun.division} standard protocols. Identified 0 critical regressions, verified FIPS 203 ML-KEM hybrid compatibility.`,
+            content: `[${agentToRun.name}] Remote execution did not return verifiable evidence.`,
             codeSnippet: `// ${agentToRun.name} Generated Output\nfunction verifyPQCSuite() {\n  console.log("${agentToRun.name} verified Post-Quantum Cryptography compliance.");\n  return { ok: true, agentId: "${agentToRun.id}" };\n}`,
             type: 'agent_output'
           },
@@ -156,9 +156,9 @@ export const AgencyAgentsHub: React.FC<AgencyAgentsHubProps> = ({ onRunAgentTask
           agentName: agentToRun.name,
           agentIcon: agentToRun.icon,
           timestamp: new Date().toLocaleTimeString(),
-          content: `[${agentToRun.name}] Task executed in autonomous fallback mode. System status green.`,
+          content: `[${agentToRun.name}] Execution unavailable; no success claim was generated.`,
           codeSnippet: `// Fallback Execution Log\nconsole.log("Agent ${agentToRun.name} execution completed successfully.");`,
-          type: 'success'
+          type: 'info'
         },
         ...prev
       ]);

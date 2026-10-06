@@ -4,6 +4,7 @@ import path from "path";
 import { createServer as createViteServer } from "vite";
 import { GoogleGenAI } from "@google/genai";
 import crypto from "crypto";
+import { ml_kem768 } from "@noble/post-quantum/ml-kem.js";
 
 import express from "express";
 const app = express();
@@ -48,21 +49,22 @@ app.post("/api/pqc/handshake", (req, res) => {
       const serverX25519Public = serverECDH.publicKey.export({ type: "spki", format: "der" });
       const serverX25519PublicRaw = serverX25519Public.subarray(-32); // Extract 32-byte raw curve point
 
-      // Simulated ML-KEM-768 Encapsulation on server
-      const pqSharedSecret = crypto.randomBytes(32);
-      const pqCiphertext = crypto.randomBytes(1088);
-      
-      // Embed client key prefix & secret into ciphertext for state binding simulation
-      if (clientMLKEMHex && clientMLKEMHex.length >= 32) {
-        pqCiphertext.set(pqSharedSecret.subarray(0, 16), 0);
-        const clientPrefix = Buffer.from(clientMLKEMHex.substring(0, 32), "hex");
-        pqCiphertext.set(clientPrefix, 16);
+      // Real FIPS 203 ML-KEM-768 encapsulation. A valid 1,184-byte client
+      // public key is mandatory; never manufacture a ciphertext or shared secret.
+      if (typeof clientMLKEMHex !== "string" || clientMLKEMHex.length !== 1184 * 2) {
+        return res.status(400).json({ error: "clientMLKEMHex must be a 1,184-byte ML-KEM-768 public key" });
       }
+      const clientMLKEMPublicKey = Uint8Array.from(Buffer.from(clientMLKEMHex, "hex"));
+      const kemResult = ml_kem768.encapsulate(clientMLKEMPublicKey);
+      const pqSharedSecret = Buffer.from(kemResult.sharedSecret);
+      const pqCiphertext = Buffer.from(kemResult.cipherText);
 
       // Compute ECDH shared secret on server if client key is provided
-      let ecdhSecret = crypto.randomBytes(32);
-      if (clientX25519Hex && clientX25519Hex.length === 64) {
-        try {
+      if (typeof clientX25519Hex !== "string" || clientX25519Hex.length !== 64) {
+        return res.status(400).json({ error: "clientX25519Hex must be a 32-byte X25519 public key" });
+      }
+      let ecdhSecret: Buffer;
+      try {
           const clientKeyDer = Buffer.concat([
             Buffer.from("302a300506032b656e032100", "hex"),
             Buffer.from(clientX25519Hex, "hex")
@@ -72,9 +74,8 @@ app.post("/api/pqc/handshake", (req, res) => {
             privateKey: serverECDH.privateKey,
             publicKey: clientPubKeyObj
           });
-        } catch (e) {
-          console.warn("Using fallback entropy for ECDH derivation simulation:", e);
-        }
+      } catch (e: any) {
+        return res.status(400).json({ error: "Invalid X25519 public key", details: e.message });
       }
 
       // HKDF Key Derivation on server
@@ -383,7 +384,7 @@ async function handleChatRequest(req: express.Request, res: express.Response) {
 [LIVE SYSTEM CLOCK CONTEXT]: Current Time: ${liveTime}, Date: ${liveDate}, Timezone: ${liveTz}.
 Instruction: Answer all questions with extreme depth, accuracy, clear markdown formatting (tables, bullet points, executable code blocks), and professional technical rigor.`;
 
-    const nvidiaKeyToUse = userApiKey || process.env.NVIDIA_API_KEY || "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";
+    const nvidiaKeyToUse = userApiKey || process.env.NVIDIA_API_KEY;
 
     // Define provider workers with 10s timeout for parallel racing
     const runPollinations = async () => {
@@ -417,6 +418,7 @@ Instruction: Answer all questions with extreme depth, accuracy, clear markdown f
     };
 
     const runNvidia = async () => {
+      if (!nvidiaKeyToUse) throw new Error("No NVIDIA API key configured");
       const selectedModel = model || "meta/llama-3.3-70b-instruct";
       const nvRes = await fetch("https://integrate.api.nvidia.com/v1/chat/completions", {
         method: "POST",
@@ -598,178 +600,22 @@ app.post("/api/chat/ollama", (req, res) => {
 // 6. REAL IBM QUANTUM QISKIT & RIGETTI QPU API / WEBHOOK INTEGRATION
 // -------------------------------------------------------------------
 
-// Retrieve IBM Quantum & Rigetti Backends & Calibration Metrics
-app.get("/api/quantum/qiskit-backends", (req, res) => {
-  const hasServerKey = Boolean(process.env.IBM_QUANTUM_API_KEY);
-  
-  res.json({
-    hasServerApiKey: hasServerKey,
-    freePlanAvailable: true,
-    provider: "IBM Quantum Platform (Qiskit Runtime API v2)",
-    backends: [
-      {
-        id: "ibm_brisbane",
-        name: "IBM Brisbane (Eagle r3 QPU)",
-        qubits: 127,
-        quantumVolume: 512,
-        status: "ONLINE",
-        pendingJobs: 4,
-        t1CoherenceMicroSec: 284.5,
-        t2CoherenceMicroSec: 142.2,
-        singleQubitGateError: 0.00021,
-        twoQubitGateError: 0.0078,
-        readoutError: 0.012,
-        temperatureMilliKelvin: 15.2,
-        qiskitRuntimeSupported: true
-      },
-      {
-        id: "ibm_kyoto",
-        name: "IBM Kyoto (Eagle r3 QPU)",
-        qubits: 127,
-        quantumVolume: 512,
-        status: "ONLINE",
-        pendingJobs: 2,
-        t1CoherenceMicroSec: 310.8,
-        t2CoherenceMicroSec: 168.4,
-        singleQubitGateError: 0.00019,
-        twoQubitGateError: 0.0064,
-        readoutError: 0.0098,
-        temperatureMilliKelvin: 14.8,
-        qiskitRuntimeSupported: true
-      },
-      {
-        id: "ibm_osaka",
-        name: "IBM Osaka (Eagle r3 QPU)",
-        qubits: 127,
-        quantumVolume: 512,
-        status: "ONLINE",
-        pendingJobs: 1,
-        t1CoherenceMicroSec: 295.1,
-        t2CoherenceMicroSec: 154.0,
-        singleQubitGateError: 0.00022,
-        twoQubitGateError: 0.0071,
-        readoutError: 0.011,
-        temperatureMilliKelvin: 15.0,
-        qiskitRuntimeSupported: true
-      },
-      {
-        id: "ibmq_qasm_simulator",
-        name: "IBM Qiskit Aer Simulator (Cloud)",
-        qubits: 32,
-        quantumVolume: 4096,
-        status: "ONLINE",
-        pendingJobs: 0,
-        t1CoherenceMicroSec: 99999.0,
-        t2CoherenceMicroSec: 99999.0,
-        singleQubitGateError: 0.00000,
-        twoQubitGateError: 0.00000,
-        readoutError: 0.0000,
-        temperatureMilliKelvin: 0.0,
-        qiskitRuntimeSupported: true
-      },
-      {
-        id: "rigetti_aspen_m3",
-        name: "Rigetti Aspen-M-3 (Ankaa-2 QPU)",
-        qubits: 84,
-        quantumVolume: 256,
-        status: "ONLINE",
-        pendingJobs: 3,
-        t1CoherenceMicroSec: 195.0,
-        t2CoherenceMicroSec: 110.0,
-        singleQubitGateError: 0.00035,
-        twoQubitGateError: 0.012,
-        readoutError: 0.018,
-        temperatureMilliKelvin: 18.5,
-        qiskitRuntimeSupported: false
-      }
-    ]
+// Real QPU execution is evidence-gated. This service does not fabricate backend
+// availability, calibration data, job IDs, counts, or completion status.
+app.get("/api/quantum/qiskit-backends", (_req, res) => {
+  res.status(503).json({
+    status: "UNVERIFIED_EXTERNAL_SERVICE",
+    provider: "IBM Quantum",
+    configured: Boolean(process.env.IBM_QUANTUM_API_KEY),
+    message: "Backend inventory must be fetched from the live provider before it can be reported."
   });
 });
 
-// Submit OpenQASM 3.0 or Qiskit Circuit to IBM Quantum QPU / Webhook
-app.post("/api/quantum/qiskit-submit", async (req, res) => {
-  try {
-    const { openqasm, backendId, shots = 1024, userApiKey, algoName } = req.body;
-    const tokenToUse = userApiKey || process.env.IBM_QUANTUM_API_KEY;
-    const backend = backendId || "ibm_brisbane";
-    const jobId = `job_qiskit_${backend}_${Date.now()}_${crypto.randomBytes(3).toString("hex")}`;
-
-    let executionSource = "IBM Quantum Qiskit Runtime API (Open Plan Cloud Webhook)";
-    let isRealHardwareKeyUsed = false;
-
-    if (tokenToUse && tokenToUse.length > 10) {
-      isRealHardwareKeyUsed = true;
-      // In real cloud env with valid user IBM Quantum token, we proxy to IBM Quantum HTTP API
-      try {
-        const ibmRes = await fetch("https://auth.quantum-computing.ibm.com/api/users/loginWithToken", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ apiToken: tokenToUse })
-        });
-        if (ibmRes.ok) {
-          executionSource = `IBM Quantum Live Hardware QPU (${backend}) via Verified IBM Account Token`;
-        }
-      } catch (err) {
-        console.warn("IBM Quantum Live Auth Attempt:", err);
-      }
-    }
-
-    // Generate accurate shot distribution & measurement counts for Shor's / QKAN / Qiskit execution
-    const totalShots = Math.min(Math.max(shots, 100), 8192);
-    const mockCounts: Record<string, number> = {};
-
-    if (algoName && algoName.toLowerCase().includes("shor")) {
-      // Shor's period estimation measurement peaks for N=15 (a=7 -> r=4)
-      const count00 = Math.round(totalShots * 0.252);
-      const count01 = Math.round(totalShots * 0.248);
-      const count10 = Math.round(totalShots * 0.249);
-      const count11 = Math.round(totalShots * (1 - 0.252 - 0.248 - 0.249));
-      mockCounts["00"] = count00;
-      mockCounts["01"] = count01;
-      mockCounts["10"] = count10;
-      mockCounts["11"] = count11;
-    } else {
-      // QKAN / General Circuit Bell State / Superposition distribution
-      const count0000 = Math.round(totalShots * 0.485);
-      const count1111 = Math.round(totalShots * 0.482);
-      const noiseShots = totalShots - count0000 - count1111;
-      mockCounts["0000"] = count0000;
-      mockCounts["1111"] = count1111;
-      mockCounts["0001"] = Math.round(noiseShots * 0.4);
-      mockCounts["1000"] = Math.round(noiseShots * 0.6);
-    }
-
-    const result = {
-      jobId,
-      backendId: backend,
-      backendName: backend.includes("brisbane") ? "IBM Brisbane (127 Qubits)" :
-                   backend.includes("kyoto") ? "IBM Kyoto (127 Qubits)" :
-                   backend.includes("osaka") ? "IBM Osaka (127 Qubits)" :
-                   backend.includes("rigetti") ? "Rigetti Aspen-M-3 (84 Qubits)" :
-                   "IBM Qiskit Aer Simulator",
-      status: "COMPLETED",
-      createdAt: new Date().toISOString(),
-      completedAt: new Date().toISOString(),
-      executionDurationMs: 342,
-      shots: totalShots,
-      counts: mockCounts,
-      executionSource,
-      isRealHardwareKeyUsed,
-      calibrationMetrics: {
-        t1Micros: 284.5,
-        t2Micros: 142.2,
-        readoutFidelity: "98.8%",
-        twoQubitGateFidelity: "99.22%",
-        quantumVolume: 512
-      },
-      openqasm3: openqasm || `OPENQASM 3.0;\ninclude "stdgates.inc";\nqubit[4] q;\nbit[4] c;\nh q[0];\ncx q[0], q[1];\ncx q[1], q[2];\ncx q[2], q[3];\nmeasure q -> c;`
-    };
-
-    return res.json(result);
-  } catch (err: any) {
-    console.error("Qiskit QPU Submit Error:", err);
-    res.status(500).json({ error: "Failed to submit Qiskit QPU Job", details: err.message });
-  }
+app.post("/api/quantum/qiskit-submit", async (_req, res) => {
+  res.status(501).json({
+    status: "LIVE_QPU_ADAPTER_REQUIRED",
+    message: "No fabricated quantum execution is permitted. Configure and implement the provider's authenticated Runtime job submission/status API, then record the provider-issued job ID as evidence."
+  });
 });
 
 // QPU Webhook Notification Endpoint (Live Webhook Callback URL)

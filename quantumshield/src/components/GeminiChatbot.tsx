@@ -73,7 +73,7 @@ export function GeminiChatbot() {
   const [selectedProvider, setSelectedProvider] = useState<'auto' | 'pollinations' | 'nvidia' | 'gemini' | 'ollama'>('auto');
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const [showSettings, setShowSettings] = useState(false);
-  const [customNvKey, setCustomNvKey] = useState('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');
+  const [customNvKey, setCustomNvKey] = useState('');
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
 

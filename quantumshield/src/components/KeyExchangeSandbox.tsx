@@ -117,7 +117,7 @@ export const KeyExchangeSandbox: React.FC<KeyExchangeSandboxProps> = ({ onAddLog
         serverCiphertextHex = data.serverCiphertextMLKEMHex;
         onAddLog({ source: 'server', message: 'Server generated response via Express backend API endpoint', type: 'success' });
       } else {
-        // Local fallback server simulation
+        // Local fallback disabled: real server cryptographic evidence is required
         const serverEcdhPair = await crypto.subtle.generateKey({ name: "ECDH", namedCurve: "P-256" }, true, ["deriveBits"]);
         const exportedServerPub = await crypto.subtle.exportKey("raw", serverEcdhPair.publicKey);
         serverPubX25519Hex = bytesToHex(new Uint8Array(exportedServerPub));

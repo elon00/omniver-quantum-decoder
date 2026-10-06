@@ -13,6 +13,8 @@
     "test": "npx tsx tests/nist-pqc.test.ts",
     "test:nist": "npx tsx tests/nist-pqc.test.ts",
     "audit:crypto": "node scripts/audit-crypto.mjs",
+    "reality:guard": "node scripts/reality-guard.mjs",
+    "heal:verify": "npm run reality:guard && npm run lint && npm run build && npm run test:nist && npm run audit:crypto && npm run reality:universal",
     "reality:universal": "npx tsx scripts/reality-universal.ts",
     "reality:external": "npx tsx scripts/reality-external-gate.ts",
     "reality:certify": "npx tsx scripts/generate-urs-certificate.ts"

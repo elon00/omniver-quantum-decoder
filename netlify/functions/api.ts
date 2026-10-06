@@ -207,7 +207,7 @@ export default async (req: Request) => {
           jobId,
           backend,
           shots,
-          status: "COMPLETED",
+          status: "UNVERIFIED_SIMULATION",
           executionTimeMs: 88.2,
           fidelity: 0.9972,
           counts: {

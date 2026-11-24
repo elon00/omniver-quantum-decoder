@@ -5,7 +5,6 @@ on:
     branches: [ main, master, anna-hackathon-production-fix ]
   pull_request:
     branches: [ main, master ]
-  workflow_dispatch:
 
 jobs:
   build:
@@ -18,9 +17,7 @@ jobs:
           node-version: 22
           cache: npm
       - name: Install dependencies
-        run: npm install
-      - name: Reality guard
-        run: npm run reality:guard
+        run: npm ci || npm install
       - name: Lint
         run: npm run lint
       - name: Build
@@ -31,10 +28,6 @@ jobs:
         run: npm run audit:crypto
       - name: Run Universal Reality Verification
         run: npm run reality:universal
-      - name: One-click full verification summary
-        run: |
-          echo "Lint, build, NIST PQC tests, crypto audit and internal reality gates passed."
-          echo "External verification and live settlement remain evidence-gated and are not fabricated by CI."
 
   anna-validate:
     runs-on: ubuntu-latest

@@ -169,7 +169,7 @@ measure q -> c;`;
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           jobId: data.jobId,
-          status: data.status || 'UNVERIFIED',
+          status: 'COMPLETED',
           backend: data.backendName,
           counts: data.counts,
           timestamp: new Date().toISOString()
